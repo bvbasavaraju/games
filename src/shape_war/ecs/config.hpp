@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace bv::lab {
+namespace bv::lab::game {
 
 struct Color_t {
     std::uint8_t red;

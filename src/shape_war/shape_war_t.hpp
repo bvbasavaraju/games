@@ -1,15 +1,17 @@
 #pragma once
 
-#include "ecs/config.hpp"
-#include "ecs/entity_manager.hpp"
+#include "config.hpp"
+#include "entity_manager.hpp"
 
 // STL includes
 #include <cstdlib>
 #include <ctime>
 
-namespace bv::lab {
+namespace bv::lab::game {
 
-class Game_t {
+using namespace ecs;
+
+class ShapeWar_t {
 private:
     
     PlayerConfig_t mPlayerConfig;
@@ -562,7 +564,7 @@ private:
     }
 
 public:
-    Game_t(uint32_t screenWidth_, uint32_t screenHeight_)
+    ShapeWar_t(uint32_t screenWidth_, uint32_t screenHeight_)
     : mScreenWidth(screenWidth_), 
       mScreenHeight(screenHeight_),
       font("./font/UbuntuMono-BI.ttf"),

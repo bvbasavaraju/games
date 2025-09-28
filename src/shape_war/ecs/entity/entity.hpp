@@ -1,16 +1,24 @@
 #pragma once
 
-#include "components.hpp"
+#include "base_component_t.hpp"
+#include "collision_t.hpp"
+#include "input_t.hpp"
+#include "lifespan_t.hpp"
+#include "placement_t.hpp"
+#include "score_t.hpp"
+#include "shape_t.hpp"
 
 // std includes
 #include <string>
 #include <tuple>
 
-namespace bv::lab {
+namespace bv::lab::game::ecs {
 
 class Entity_t {
 
 private:
+    using ComponentsAsTuple_t = std::tuple<BaseComponent_t, Placement_t, Shape_t, Collision_t, Score_t, Lifespan_t, Input_t>;
+
     ComponentsAsTuple_t mComponents{};
     bool mActive{true};
     std::string mTag = "None";    // TODO: Convert this to type and pass it as template argument
@@ -66,4 +74,4 @@ public:
         comp = T();
     }
 };
-}   // namespace bv::lab
+}   // namespace bv::lab::game::ecs
