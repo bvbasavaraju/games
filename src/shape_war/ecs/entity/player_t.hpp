@@ -5,7 +5,7 @@
 
 namespace bv::lab::game::ecs::entity {
 
-struct player_t {
+struct Player_t {
 
     static auto create(auto &entityManager, auto &config) {
         auto player = entityManager.addEntity("player");

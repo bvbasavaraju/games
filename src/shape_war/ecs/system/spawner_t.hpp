@@ -2,6 +2,7 @@
 
 #include "player_t.hpp"
 #include "bullet_t.hpp"
+#include "enemy_t.hpp"
 
 namespace bv::lab::game::ecs {
 
@@ -29,7 +30,7 @@ struct Spawner_t {
     }
 
     static auto createPlayer(auto &entityManager, auto &config) {
-        player_t::create(entityManager, config);
+        Player_t::create(entityManager, config);
     }
 
     // Bullet Creation
@@ -86,6 +87,59 @@ struct Spawner_t {
             Bullet_t::create(entityManager, config, "specialBullet", playerPlacement.pos, velocity, 0.0f);
             angle += 360.0/bulletCount;
         }
+    }
+
+    // Enemy Creation
+    static auto createEnemy(auto &entityManager, auto screenWidth, auto screenHeight) {
+
+        static auto config = EnemyConfig_t {
+            // BaseConfig_t members
+            0,                          // posX
+            0,                          // posY
+            32,                         // shapeRadius
+            32,                         // collisionRadius
+            2,                          // outlineThickness
+            { 128, 128, 128 },          // fillColor {red, green, blue}
+            { 255, 255, 255 },          // outlineColor {red, green, blue}
+            // EnemyConfig_t members
+            1,                          // speedMin
+            1,                          // shapeMax
+            3,                          // verticesMin
+            8,                          // verticesMin
+            1200                        // lifespan
+        };
+
+        // adjust the position if its in the boundary!
+        auto adjustIfInBoundary = [&](auto &pos, auto end) {
+            if((pos < (end << 1) && pos < (config.shapeRadius * 2))) {
+                pos = config.shapeRadius * 2;
+            } else if(pos > (end << 1) && pos > (end - config.shapeRadius * 2)) {
+                pos = end - config.shapeRadius * 2;
+            }
+        };
+
+        auto posX = rand() % screenWidth;
+        auto posY = rand() % screenHeight;
+
+        adjustIfInBoundary(posX, screenWidth);
+        adjustIfInBoundary(posY, screenHeight);
+
+        // Velocity Calc
+        auto velX = (posX > (screenWidth >> 1)) ? config.speedMin * -1.0f : config.speedMin;
+        auto velY = (posY > (screenHeight >> 1)) ? config.speedMin * -1.0f : config.speedMin;
+
+        auto posVec = Vec2f{posX * 1.0f, posY * 1.0f};
+        auto velocityVec = Vec2f{velX, velY};
+        createEnemy(entityManager, config, posVec, velocityVec);
+    }
+
+    static auto createEnemy(auto &entityManager, auto &config, auto &posVec, auto &velocityVec) {
+        Enemy_t::create(entityManager, config, posVec, velocityVec);
+    }
+
+    // Smaller Enemy creation
+    static auto createSmallerEnemy(auto &entityManager, auto parentEnemy) {
+        Enemy_t::createSmaller(entityManager, parentEnemy);
     }
 };
 

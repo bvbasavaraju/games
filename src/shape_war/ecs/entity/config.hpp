@@ -31,7 +31,6 @@ struct EnemyConfig_t : BaseConfig_t {
     int verticesMin;
     int verticesMax;
     int lifespan;
-    int spawnInterval;
 };
 
 struct BulletConfig_t : PlayerConfig_t {

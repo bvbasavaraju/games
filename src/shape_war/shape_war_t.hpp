@@ -2,7 +2,7 @@
 
 #include "config.hpp"
 #include "entity_manager.hpp"
-#include "system_t.hpp"
+#include "spawner_t.hpp"
 
 // STL includes
 #include <cstdlib>
@@ -16,8 +16,6 @@ using namespace ecs::system;
 
 class ShapeWar_t {
 private:
-    
-    EnemyConfig_t mEnemyConfig;
     EntityManager_t mEntityManager;
     
     sf::RenderWindow mWindow;
@@ -33,6 +31,7 @@ private:
     std::uint32_t mScreenWidth;
     std::uint32_t mScreenHeight;
     std::uint32_t mSpecialWeaponCount;
+    std::uint32_t mSpawningInterval;
 
     std::array<sf::Color, 6> fillColors = {
         sf::Color::Red, 
@@ -47,29 +46,8 @@ private:
         static_assert(false, "check type now");
     }
 
-    void setEnemyConfig() {
-        mEnemyConfig.shapeRadius = 32;
-        mEnemyConfig.collisionRadius = 32;
-        mEnemyConfig.outlineThickness = 2;
-        mEnemyConfig.fillColor.red = 128;
-        mEnemyConfig.fillColor.green = 128;
-        mEnemyConfig.fillColor.blue = 128;
-        mEnemyConfig.outlineColor.red = 255;
-        mEnemyConfig.outlineColor.green = 255;
-        mEnemyConfig.outlineColor.blue = 255;
-
-        mEnemyConfig.speedMin = 1;
-        mEnemyConfig.speedMax = 1;
-        mEnemyConfig.verticesMin = 3;
-        mEnemyConfig.verticesMax = 8;
-        mEnemyConfig.lifespan = 1200;
-        mEnemyConfig.spawnInterval = 90;
-    };
-
     void init() {
         srand(time(0));
-
-        setEnemyConfig();
         
         mWindow.create(sf::VideoMode({mScreenWidth, mScreenHeight}), "ShapeWar");
         mWindow.setFramerateLimit(60);
@@ -80,82 +58,13 @@ private:
     }
 
     void spawnEnemies() {
-        auto enemy = mEntityManager.addEntity("enemy");
-
-        // adjust the position if its in the boundary!
-        auto adjustIfInBoundary = [&](auto &pos, auto end) {
-            if((pos < (end << 1) && pos < (mEnemyConfig.shapeRadius * 2))) {
-                pos = mEnemyConfig.shapeRadius * 2;
-            } else if(pos > (end << 1) && pos > (end - mEnemyConfig.shapeRadius * 2)) {
-                pos = end - mEnemyConfig.shapeRadius * 2;
-            }
-        };
-
-        // Position calc
-        auto posX = (rand() %  mScreenWidth);
-        auto posY = (rand() %  mScreenHeight);
-
-        adjustIfInBoundary(posX, mScreenWidth);
-        adjustIfInBoundary(posY, mScreenHeight);
-
-        // Velocity Calc
-        auto velX = (posX > (mScreenWidth >> 1)) ? mEnemyConfig.speedMin * -1.0f : mEnemyConfig.speedMin;
-        auto velY = (posY > (mScreenHeight >> 1)) ? mEnemyConfig.speedMin * -1.0f : mEnemyConfig.speedMin;
-
-        auto edges = rand() % (mEnemyConfig.verticesMax - mEnemyConfig.verticesMin + 1);
-        auto vertices = edges + mEnemyConfig.verticesMin;   // Offset of 3 vertices
-
-        auto fillColor = fillColors[edges % fillColors.size()];
-        fillColor.a = 150;
-
-        // add necessary components
-        enemy->add<Placement_t>(Vec2f{posX * 1.0f, posY * 1.0f}, Vec2f{velX, velY}, 0.0);
-        enemy->add<Shape_t>(
-            mEnemyConfig.shapeRadius,
-            vertices,
-            fillColor,
-            sf::Color{mEnemyConfig.outlineColor.red, mEnemyConfig.outlineColor.green, mEnemyConfig.outlineColor.blue},
-            mEnemyConfig.outlineThickness
-        );
-        enemy->add<Collision_t>(mEnemyConfig.collisionRadius);
-        enemy->add<Score_t>((vertices - mEnemyConfig.verticesMin + 1) * 10);
-        enemy->add<Lifespan_t>(mEnemyConfig.lifespan);
-
-        // updated current frame so that auto spawn is possible
+        Spawner_t::createEnemy(mEntityManager, mScreenWidth, mScreenHeight);
         mLastEnemySpawnTime = mCurrentFrame;
     }
 
     // This is used when bullet hits the enemy
     void spawnEnemyDestruction(auto &entity) {
-        auto &enemyPlacement = entity->template get<Placement_t>();
-        auto &enemyShape = entity->template get<Shape_t>();
-        auto &enemyCollision = entity->template get<Collision_t>();
-        auto &enemyScore = entity->template get<Score_t>();
-        auto &enemyLifespan = entity->template get<Lifespan_t>();
-
-        auto fillColor = enemyShape.circle.getFillColor();
-        fillColor.a >>= 1;  // Reduce the alpha component by half!
-
-        auto angle = 0.0;
-        auto smallerCount = enemyShape.circle.getPointCount();
-        for(auto i = 0; i < smallerCount; ++i) {
-            Vec2f velocity = Vec2f::getCoOrdinates(mEnemyConfig.speedMin, angle);
-
-            auto smallEnemy = mEntityManager.addEntity("smallEnemy");
-            smallEnemy->add<Placement_t>(enemyPlacement.pos, velocity, 0.0);
-            smallEnemy->add<Shape_t>(
-                enemyShape.circle.getRadius()/2,
-                enemyShape.circle.getPointCount(),
-                fillColor,
-                enemyShape.circle.getOutlineColor(),
-                enemyShape.circle.getOutlineThickness()
-            );
-            smallEnemy->add<Collision_t>(enemyCollision.radius / 2);
-            smallEnemy->add<Score_t>(enemyScore.score << 1);
-            smallEnemy->add<Lifespan_t>(std::min(enemyLifespan.lifespanInFrames >> 1, 300));
-
-            angle += 360.0/smallerCount;
-        }
+        Spawner_t::createSmallerEnemy(mEntityManager, entity);
     }
 
     void spawnSpecialWeapon() {
@@ -375,7 +284,7 @@ private:
     }
 
     void enemySpanner() {
-        if((mCurrentFrame - mLastEnemySpawnTime) > mEnemyConfig.spawnInterval) {
+        if((mCurrentFrame - mLastEnemySpawnTime) > mSpawningInterval) {
             spawnEnemies();
         }
     }
@@ -473,7 +382,9 @@ public:
     : mScreenWidth(screenWidth_), 
       mScreenHeight(screenHeight_),
       font("./font/UbuntuMono-BI.ttf"),
-      text(font) {
+      text(font),
+      mLastEnemySpawnTime(0),
+      mSpawningInterval(90) {
         init();
     }
 
