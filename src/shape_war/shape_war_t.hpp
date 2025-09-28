@@ -17,9 +17,7 @@ using namespace ecs::system;
 class ShapeWar_t {
 private:
     
-    // PlayerConfig_t mPlayerConfig;
     EnemyConfig_t mEnemyConfig;
-    BulletConfig_t mBulletConfig;
     EntityManager_t mEntityManager;
     
     sf::RenderWindow mWindow;
@@ -49,21 +47,6 @@ private:
         static_assert(false, "check type now");
     }
 
-    // void setPlayerConfig() {
-    //     mPlayerConfig.shapeRadius = 32;
-    //     mPlayerConfig.collisionRadius = 32;
-    //     mPlayerConfig.outlineThickness = 4;
-    //     mPlayerConfig.fillColor.red = 5;
-    //     mPlayerConfig.fillColor.green = 5;
-    //     mPlayerConfig.fillColor.blue = 5;
-    //     mPlayerConfig.outlineColor.red = 255;
-    //     mPlayerConfig.outlineColor.green = 0;
-    //     mPlayerConfig.outlineColor.blue = 0;
-        
-    //     mPlayerConfig.speed = 5;
-    //     mPlayerConfig.shapeVertices = 8;
-    // };
-
     void setEnemyConfig() {
         mEnemyConfig.shapeRadius = 32;
         mEnemyConfig.collisionRadius = 32;
@@ -83,54 +66,18 @@ private:
         mEnemyConfig.spawnInterval = 90;
     };
 
-    void setBulletConfig() {
-        mBulletConfig.shapeRadius = 10;
-        mBulletConfig.collisionRadius = 10;
-        mBulletConfig.outlineThickness = 2;
-        mBulletConfig.fillColor.red = 255;
-        mBulletConfig.fillColor.green = 255;
-        mBulletConfig.fillColor.blue = 255;
-        mBulletConfig.outlineColor.red = 255;
-        mBulletConfig.outlineColor.green = 255;
-        mBulletConfig.outlineColor.blue = 255;
-        
-        mBulletConfig.speed = 20;
-        mBulletConfig.shapeVertices = 20;
-        mBulletConfig.lifespan = 90;
-    };
-
     void init() {
         srand(time(0));
 
-        // setPlayerConfig();
         setEnemyConfig();
-        setBulletConfig();
-
+        
         mWindow.create(sf::VideoMode({mScreenWidth, mScreenHeight}), "ShapeWar");
         mWindow.setFramerateLimit(60);
 
         // TODO: add runtime config option using IMGUI: https://www.youtube.com/watch?v=-ugbLQlw_VM&list=PL_xRyXins84_Sq7yZkxGP_MgYAH-Zo8Uu&index=7
 
-        // spawnPlayer();
         Spawner_t::createPlayer(mEntityManager, mScreenWidth, mScreenHeight);
     }
-
-    // void spawnPlayer() {
-    //     auto player = mEntityManager.addEntity("player");
-    //     player->add<Placement_t>(
-    //         Vec2f{static_cast<float>(mScreenWidth >> 1), static_cast<float>(mScreenHeight >> 1)}, 
-    //         Vec2f{1.0f, 1.0f}, 
-    //         0.0);
-        
-    //     player->add<Shape_t>(
-    //         mPlayerConfig.shapeRadius, 
-    //         mPlayerConfig.shapeVertices, 
-    //         sf::Color{mPlayerConfig.fillColor.red, mPlayerConfig.fillColor.green, mPlayerConfig.fillColor.blue},
-    //         sf::Color{mPlayerConfig.outlineColor.red, mPlayerConfig.outlineColor.green, mPlayerConfig.outlineColor.blue},
-    //         mPlayerConfig.outlineThickness);
-
-    //     player->add<Input_t>();
-    // }
 
     void spawnEnemies() {
         auto enemy = mEntityManager.addEntity("enemy");
@@ -216,56 +163,9 @@ private:
             return;
         }
 
-        auto player_ = player();
-        auto &playerPlacement = player_->template get<Placement_t>();
-        auto &playerShape = player_->template get<Shape_t>();
-
-        auto angle = 0.0;
-        auto bulletCount = playerShape.circle.getPointCount();
-        for(auto i = 0; i < bulletCount; ++i) {
-            Vec2f velocity = Vec2f::getCoOrdinates(mBulletConfig.speed, angle);
-
-            auto special = mEntityManager.addEntity("specialBullet");
-            special->add<Placement_t>(playerPlacement.pos, velocity, 0.0);
-            special->add<Shape_t>(
-                mBulletConfig.shapeRadius,
-                mBulletConfig.shapeVertices,
-                sf::Color::Red,
-                sf::Color::Red,
-                mBulletConfig.outlineThickness
-            );
-            special->add<Collision_t>(mBulletConfig.collisionRadius);
-            special->add<Lifespan_t>(mBulletConfig.lifespan);
-
-            angle += 360.0/bulletCount;
-        }
+        Spawner_t::createSpecialWeapon(mEntityManager, player());
 
         mSpecialWeaponCount--;
-    }
-
-    // Spawn bullet from player's location to target location (mouse click)
-    void spawnBullets(auto playerEntity, Vec2f const& mousePosVec) {
-        auto &playerPosVec = playerEntity->template get<Placement_t>().pos;
-        
-        // Distance vector
-        auto distVec = mousePosVec - playerPosVec;
-        distVec.normalize();
-
-        // Bullet speed and velocity
-        auto bulletVelocity = Vec2f{distVec.x * mBulletConfig.speed, distVec.y * mBulletConfig.speed};
-        float bulletAngle = distVec.angle();
-
-        // Create Bullet entity
-        auto bullet = mEntityManager.addEntity("bullet");
-        bullet->add<Placement_t>(playerPosVec, bulletVelocity, bulletAngle);
-        bullet->add<Shape_t>(
-            mBulletConfig.shapeRadius,
-            mBulletConfig.shapeVertices,
-            sf::Color{mBulletConfig.fillColor.red, mBulletConfig.fillColor.green, mBulletConfig.fillColor.blue},
-            sf::Color{mBulletConfig.outlineColor.red, mBulletConfig.outlineColor.green, mBulletConfig.outlineColor.blue},
-            mBulletConfig.outlineThickness);
-        bullet->add<Lifespan_t>(mBulletConfig.lifespan);
-        bullet->add<Collision_t>(mBulletConfig.collisionRadius);
     }
 
     void movement() {
@@ -553,7 +453,8 @@ private:
             // Mouse event
             if(auto const* mouseClick = event->getIf<sf::Event::MouseButtonPressed>()) {
                 if(mouseClick->button == sf::Mouse::Button::Left) {
-                    spawnBullets(player(), {static_cast<float>(mouseClick->position.x), static_cast<float>(mouseClick->position.y)});
+                    Vec2f mouseClickVec = { mouseClick->position.x * 1.0f, mouseClick->position.y * 1.0f };
+                    Spawner_t::createBullet(mEntityManager, player(), mouseClickVec);
                 }
 
                 if(mouseClick->button == sf::Mouse::Button::Right) { 
