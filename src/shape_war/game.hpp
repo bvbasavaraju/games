@@ -565,7 +565,7 @@ public:
     Game_t(uint32_t screenWidth_, uint32_t screenHeight_)
     : mScreenWidth(screenWidth_), 
       mScreenHeight(screenHeight_),
-      font("../../font/UbuntuMono-BI.ttf"),
+      font("./font/UbuntuMono-BI.ttf"),
       text(font) {
         init();
     }
