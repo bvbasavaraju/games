@@ -1,2 +1,2 @@
 add_subdirectory(chess)
-add_subdirectory(simple_shoot_game)
+add_subdirectory(shape_war)

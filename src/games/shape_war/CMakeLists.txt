@@ -1,4 +1,4 @@
-project(SimpleShootGame)
+project(shape_war)
 
 set(SRC_FILES ./main.cpp)
 
