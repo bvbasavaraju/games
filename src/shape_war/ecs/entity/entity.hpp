@@ -14,6 +14,8 @@
 
 namespace bv::lab::game::ecs {
 
+using namespace component;
+namespace entity {
 class Entity_t {
 
 private:
@@ -74,4 +76,5 @@ public:
         comp = T();
     }
 };
+}   // namespace entity
 }   // namespace bv::lab::game::ecs

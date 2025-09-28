@@ -2,7 +2,7 @@
 
 #include "base_component_t.hpp"
 
-namespace bv::lab::game::ecs {
+namespace bv::lab::game::ecs::component {
 
 struct Collision_t : BaseComponent_t {
     float radius{0.0};
@@ -12,4 +12,4 @@ struct Collision_t : BaseComponent_t {
     : radius(r) {}
 };
 
-}   // namespace bv::lab::game::ecs
+}   // namespace bv::lab::game::ecs::component

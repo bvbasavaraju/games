@@ -2,7 +2,7 @@
 
 #include "base_component_t.hpp"
 
-namespace bv::lab::game::ecs {
+namespace bv::lab::game::ecs::component {
 
 struct Placement_t : BaseComponent_t {
     Vec2f pos{0, 0};    // Position
@@ -14,4 +14,4 @@ struct Placement_t : BaseComponent_t {
     : pos(pos_), velocity(velocity_), angle(angle_) {}
 };
 
-}   // namespace bv::lab::game::ecs
+}   // namespace bv::lab::game::ecs::component

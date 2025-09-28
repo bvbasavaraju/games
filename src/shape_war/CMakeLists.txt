@@ -15,6 +15,7 @@ target_include_directories(
     ecs
     ecs/components
     ecs/entity
+    ecs/system
 )
 
 target_link_libraries(

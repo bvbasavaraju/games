@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../utils/vector2.hpp"
+#include "vector2.hpp"
 
-namespace bv::lab::game::ecs {
+namespace bv::lab::game::ecs::component {
 
 struct BaseComponent_t {
     bool exists{false};
@@ -11,4 +11,4 @@ struct BaseComponent_t {
 template <typename T>
 concept IsComponent = std::is_same_v<T, BaseComponent_t> || std::is_base_of_v<BaseComponent_t, T>;
 
-}   // namespace bv::lab::game::ecs
+}   // namespace bv::lab::game::ecs::component

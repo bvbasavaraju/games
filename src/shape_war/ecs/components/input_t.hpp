@@ -2,7 +2,7 @@
 
 #include "base_component_t.hpp"
 
-namespace bv::lab::game::ecs {
+namespace bv::lab::game::ecs::component {
 
     struct Input_t : BaseComponent_t {
     bool up{false};
@@ -14,4 +14,4 @@ namespace bv::lab::game::ecs {
     Input_t() = default;
 };
 
-}   // namespace bv::lab::game::ecs
+}   // namespace bv::lab::game::ecs::component

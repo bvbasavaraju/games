@@ -2,7 +2,7 @@
 
 #include "base_component_t.hpp"
 
-namespace bv::lab::game::ecs {
+namespace bv::lab::game::ecs::component {
 
 struct Shape_t : BaseComponent_t {
     sf::CircleShape circle;
@@ -17,4 +17,4 @@ struct Shape_t : BaseComponent_t {
     }
 };
 
-}   // namespace bv::lab::game::ecs
+}   // namespace bv::lab::game::ecs::component

@@ -2,6 +2,7 @@
 
 #include "config.hpp"
 #include "entity_manager.hpp"
+#include "system_t.hpp"
 
 // STL includes
 #include <cstdlib>
@@ -9,12 +10,14 @@
 
 namespace bv::lab::game {
 
-using namespace ecs;
+using namespace ecs::entity;
+using namespace ecs::component;
+using namespace ecs::system;
 
 class ShapeWar_t {
 private:
     
-    PlayerConfig_t mPlayerConfig;
+    // PlayerConfig_t mPlayerConfig;
     EnemyConfig_t mEnemyConfig;
     BulletConfig_t mBulletConfig;
     EntityManager_t mEntityManager;
@@ -46,20 +49,20 @@ private:
         static_assert(false, "check type now");
     }
 
-    void setPlayerConfig() {
-        mPlayerConfig.shapeRadius = 32;
-        mPlayerConfig.collisionRadius = 32;
-        mPlayerConfig.outlineThickness = 4;
-        mPlayerConfig.fillColor.red = 5;
-        mPlayerConfig.fillColor.green = 5;
-        mPlayerConfig.fillColor.blue = 5;
-        mPlayerConfig.outlineColor.red = 255;
-        mPlayerConfig.outlineColor.green = 0;
-        mPlayerConfig.outlineColor.blue = 0;
+    // void setPlayerConfig() {
+    //     mPlayerConfig.shapeRadius = 32;
+    //     mPlayerConfig.collisionRadius = 32;
+    //     mPlayerConfig.outlineThickness = 4;
+    //     mPlayerConfig.fillColor.red = 5;
+    //     mPlayerConfig.fillColor.green = 5;
+    //     mPlayerConfig.fillColor.blue = 5;
+    //     mPlayerConfig.outlineColor.red = 255;
+    //     mPlayerConfig.outlineColor.green = 0;
+    //     mPlayerConfig.outlineColor.blue = 0;
         
-        mPlayerConfig.speed = 5;
-        mPlayerConfig.shapeVertices = 8;
-    };
+    //     mPlayerConfig.speed = 5;
+    //     mPlayerConfig.shapeVertices = 8;
+    // };
 
     void setEnemyConfig() {
         mEnemyConfig.shapeRadius = 32;
@@ -99,7 +102,7 @@ private:
     void init() {
         srand(time(0));
 
-        setPlayerConfig();
+        // setPlayerConfig();
         setEnemyConfig();
         setBulletConfig();
 
@@ -108,25 +111,26 @@ private:
 
         // TODO: add runtime config option using IMGUI: https://www.youtube.com/watch?v=-ugbLQlw_VM&list=PL_xRyXins84_Sq7yZkxGP_MgYAH-Zo8Uu&index=7
 
-        spawnPlayer();
+        // spawnPlayer();
+        Spawner_t::createPlayer(mEntityManager, mScreenWidth, mScreenHeight);
     }
 
-    void spawnPlayer() {
-        auto player = mEntityManager.addEntity("player");
-        player->add<Placement_t>(
-            Vec2f{static_cast<float>(mScreenWidth >> 1), static_cast<float>(mScreenHeight >> 1)}, 
-            Vec2f{1.0f, 1.0f}, 
-            0.0);
+    // void spawnPlayer() {
+    //     auto player = mEntityManager.addEntity("player");
+    //     player->add<Placement_t>(
+    //         Vec2f{static_cast<float>(mScreenWidth >> 1), static_cast<float>(mScreenHeight >> 1)}, 
+    //         Vec2f{1.0f, 1.0f}, 
+    //         0.0);
         
-        player->add<Shape_t>(
-            mPlayerConfig.shapeRadius, 
-            mPlayerConfig.shapeVertices, 
-            sf::Color{mPlayerConfig.fillColor.red, mPlayerConfig.fillColor.green, mPlayerConfig.fillColor.blue},
-            sf::Color{mPlayerConfig.outlineColor.red, mPlayerConfig.outlineColor.green, mPlayerConfig.outlineColor.blue},
-            mPlayerConfig.outlineThickness);
+    //     player->add<Shape_t>(
+    //         mPlayerConfig.shapeRadius, 
+    //         mPlayerConfig.shapeVertices, 
+    //         sf::Color{mPlayerConfig.fillColor.red, mPlayerConfig.fillColor.green, mPlayerConfig.fillColor.blue},
+    //         sf::Color{mPlayerConfig.outlineColor.red, mPlayerConfig.outlineColor.green, mPlayerConfig.outlineColor.blue},
+    //         mPlayerConfig.outlineThickness);
 
-        player->add<Input_t>();
-    }
+    //     player->add<Input_t>();
+    // }
 
     void spawnEnemies() {
         auto enemy = mEntityManager.addEntity("enemy");

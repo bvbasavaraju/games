@@ -2,7 +2,7 @@
 
 #include "base_component_t.hpp"
 
-namespace bv::lab::game::ecs {
+namespace bv::lab::game::ecs::component {
 
 struct Score_t : BaseComponent_t {
     int score{0};
@@ -12,4 +12,4 @@ struct Score_t : BaseComponent_t {
     : score(s) {}
 };
 
-}   // namespace bv::lab::game::ecs
+}   // namespace bv::lab::game::ecs::component

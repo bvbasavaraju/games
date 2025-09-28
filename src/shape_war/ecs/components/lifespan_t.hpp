@@ -2,7 +2,7 @@
 
 #include "base_component_t.hpp"
 
-namespace bv::lab::game::ecs {
+namespace bv::lab::game::ecs::component {
 
 struct Lifespan_t : BaseComponent_t {
     int lifespanInFrames{0};
@@ -13,4 +13,4 @@ struct Lifespan_t : BaseComponent_t {
     : lifespanInFrames(totalLifespanInFrames), remainingLife(totalLifespanInFrames) {}
 };
 
-}   // namespace bv::lab::game::ecs
+}   // namespace bv::lab::game::ecs::component
