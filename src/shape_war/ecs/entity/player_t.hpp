@@ -5,7 +5,25 @@
 
 namespace bv::lab::game::ecs::entity {
 
-struct Player_t {
+struct Player_t : public Entity_t {
+
+    static auto create(auto &entityManager, auto screenWidth, auto screenHeight) {
+        static auto config = PlayerConfig_t {
+            // BaseConfig_t members
+            screenWidth >> 1,    // posX
+            screenHeight >> 1,   // posY
+            32,                  // shapeRadius
+            32,                  // collisionRadius
+            4,                   // outlineThickness
+            { 5, 5, 5 },        // fillColor {red, green, blue}
+            { 255, 0, 0 },      // outlineColor {red, green, blue}
+            // PlayerConfig_t members
+            1,                   // speed
+            8                    // shapeVertices
+        };
+
+        create(entityManager, config);
+    }
 
     static auto create(auto &entityManager, auto &config) {
         auto player = entityManager.addEntity("player");

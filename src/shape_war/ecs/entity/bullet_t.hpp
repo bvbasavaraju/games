@@ -7,6 +7,27 @@ namespace bv::lab::game::ecs::entity {
 
 struct Bullet_t {
 
+    static auto create(auto &entityManager, auto playerEntity, Vec2f const& mousePosVec) {
+        static auto config = BulletConfig_t {
+            // BaseConfig_t members
+            0,                  // posX
+            0,                  // posY
+            10,                 // shapeRadius
+            10,                 // collisionRadius
+            2,                  // outlineThickness
+            { 255, 255, 255 },  // fillColor {red, green, blue}
+            { 255, 255, 255 },  // outlineColor {red, green, blue}
+            // PlayerConfig_t members
+            20,                 // speed
+            20,                 // shapeVertices
+            // BulletConfig_t members
+            90                  // lifespan
+        };
+
+        auto playerPosVec = playerEntity->template get<Placement_t>().pos;
+        create(entityManager, config, playerPosVec, mousePosVec);
+    }
+
     static auto create(auto &entityManager, auto &config, auto &srcPosVec, auto &destPosVec) {
         // Distance vector
         auto distVec = destPosVec - srcPosVec;

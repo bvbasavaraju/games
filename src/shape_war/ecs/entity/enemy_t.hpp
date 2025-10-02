@@ -7,6 +7,49 @@ namespace bv::lab::game::ecs::entity {
 
 struct Enemy_t {
 
+    static auto create(auto &entityManager, auto screenWidth, auto screenHeight) {
+
+        static auto config = EnemyConfig_t {
+            // BaseConfig_t members
+            0,                          // posX
+            0,                          // posY
+            32,                         // shapeRadius
+            32,                         // collisionRadius
+            2,                          // outlineThickness
+            { 128, 128, 128 },          // fillColor {red, green, blue}
+            { 255, 255, 255 },          // outlineColor {red, green, blue}
+            // EnemyConfig_t members
+            1,                          // speedMin
+            1,                          // shapeMax
+            3,                          // verticesMin
+            8,                          // verticesMin
+            1200                        // lifespan
+        };
+
+        // adjust the position if its in the boundary!
+        auto adjustIfInBoundary = [&](auto &pos, auto end) {
+            if((pos < (end << 1) && pos < (config.shapeRadius * 2))) {
+                pos = config.shapeRadius * 2;
+            } else if(pos > (end << 1) && pos > (end - config.shapeRadius * 2)) {
+                pos = end - config.shapeRadius * 2;
+            }
+        };
+
+        auto posX = rand() % screenWidth;
+        auto posY = rand() % screenHeight;
+
+        adjustIfInBoundary(posX, screenWidth);
+        adjustIfInBoundary(posY, screenHeight);
+
+        // Velocity Calc
+        auto velX = (posX > (screenWidth >> 1)) ? config.speedMin * -1.0f : config.speedMin;
+        auto velY = (posY > (screenHeight >> 1)) ? config.speedMin * -1.0f : config.speedMin;
+
+        auto posVec = Vec2f{posX * 1.0f, posY * 1.0f};
+        auto velocityVec = Vec2f{velX, velY};
+        create(entityManager, config, posVec, velocityVec);
+    }
+
     static auto create(auto &entityManager, auto &config, auto &posVec, auto &velocityVec) {
         static std::array<sf::Color, 6> fillColors = {
             sf::Color::Red, 

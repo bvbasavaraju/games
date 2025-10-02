@@ -18,7 +18,7 @@ using namespace component;
 namespace entity {
 class Entity_t {
 
-private:
+protected:
     using ComponentsAsTuple_t = std::tuple<BaseComponent_t, Placement_t, Shape_t, Collision_t, Score_t, Lifespan_t, Input_t>;
 
     ComponentsAsTuple_t mComponents{};
