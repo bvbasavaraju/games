@@ -10,7 +10,12 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/../../font/" DESTINATION "${CMAKE_BINARY_
 
 target_include_directories(
     ${PROJECT_NAME} 
-    PUBLIC utils
+    PUBLIC 
+    utils
+    ecs
+    ecs/components
+    ecs/entity
+    ecs/system
 )
 
 target_link_libraries(

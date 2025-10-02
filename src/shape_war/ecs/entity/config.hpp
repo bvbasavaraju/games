@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace bv::lab {
+namespace bv::lab::game::ecs::entity {
 
 struct Color_t {
     std::uint8_t red;
@@ -11,6 +11,8 @@ struct Color_t {
 };
 
 struct BaseConfig_t {
+    std::uint32_t posX;
+    std::uint32_t posY;
     int shapeRadius;
     int collisionRadius;
     int outlineThickness;
@@ -29,11 +31,10 @@ struct EnemyConfig_t : BaseConfig_t {
     int verticesMin;
     int verticesMax;
     int lifespan;
-    int spawnInterval;
 };
 
 struct BulletConfig_t : PlayerConfig_t {
     int lifespan;
 };
 
-}   // namespace bv::lab
+}   // namespace bv::lab::game::ecs::entity

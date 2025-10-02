@@ -7,7 +7,7 @@
 #include <memory>
 #include <map>
 
-namespace bv::lab {
+namespace bv::lab::game::ecs::entity {
 
 using EntityVector_t = std::vector<std::shared_ptr<Entity_t>>;
 using EntityMap_t = std::unordered_map<std::string, EntityVector_t>;
@@ -66,4 +66,4 @@ public:
     }
 };  
 
-}   // namespace bv::lab
+}   // namespace bv::lab::game::ecs::entity
