@@ -48,7 +48,7 @@ private:
         }
 
         // Increase a special weapon count if the score is added with 500 points
-        if((score - prevScore) > 500) {
+        if(!isSpecialBullet && ((score - prevScore) >= 500)) {
             specialWeaponCount++;
             prevScore = score;
         }
@@ -99,7 +99,7 @@ private:
         for(auto &weapon: weapons) {
             for(auto &enemy: enemies) {
                 if(entityCollisionCheck(weapon, enemy)) {
-                    updateScore(score, enemy, specialWeaponCount);
+                    updateScore(score, enemy, specialWeaponCount, isSpecial);
                     enemy->destroy();
 
                     if(!isSmaller) {

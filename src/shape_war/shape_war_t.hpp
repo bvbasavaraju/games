@@ -100,7 +100,7 @@ public:
       mFont("./font/UbuntuMono-BI.ttf"),
       mText(mFont),
       mLastEnemySpawnTime(0),
-      mSpawningInterval(90) {
+      mSpawningInterval(45) {
         init();
     }
 
