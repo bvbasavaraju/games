@@ -23,7 +23,7 @@ struct Enemy_t {
             1,                          // shapeMax
             3,                          // verticesMin
             8,                          // verticesMin
-            1200                        // lifespan
+            600                        // lifespan
         };
 
         // adjust the position if its in the boundary!
@@ -106,7 +106,7 @@ struct Enemy_t {
             );
             smallEnemy->template add<Collision_t>(enemyCollision.radius / 2);
             smallEnemy->template add<Score_t>(enemyScore.score << 1);
-            smallEnemy->template add<Lifespan_t>(std::min(enemyLifespan.lifespanInFrames >> 1, 300));
+            smallEnemy->template add<Lifespan_t>(std::min(enemyLifespan.lifespanInFrames >> 1, 120));
 
             angle += 360.0/smallerCount;
         }
